@@ -8,7 +8,9 @@ import java.util.ArrayList;
 
 public class RegistrationData {
     String name, college, phone, email, amount, vid;
-    ArrayList<String> events = new ArrayList<String>();
+    ArrayList<String> eventIds = new ArrayList<String>();
+    Boolean emailSent;
+
 
 
     RegistrationData()
@@ -23,7 +25,8 @@ public class RegistrationData {
         this.phone = phone;
         this.email = email;
         this.amount = amount;
-        this.events.add(0, events);
+        this.eventIds.add(0, events);
         this.vid = vid;
+        emailSent = false;
     }
 }
