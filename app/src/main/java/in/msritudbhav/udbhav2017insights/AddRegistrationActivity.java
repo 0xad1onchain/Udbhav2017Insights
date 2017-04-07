@@ -68,7 +68,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
                     registrationDetails post = postSnapshot.getValue(registrationDetails.class);
                     Log.e("Get Data", "GotIT"+post.name);
                     obj = post;
-                    detail.setText("Event: "+ obj.name+"\n Amount: "+obj.regamt+"\nCategory: "+ obj.catname );
+                    detail.setText("Event: "+ obj.name+"\nAmount: "+obj.regamt+"\nCategory: "+ obj.catname );
 
 
 
@@ -96,7 +96,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
                 String Email = email.getText().toString();
                 String vid = mAuth.getCurrentUser().getEmail();
                 String amount = obj.regamt;
-                String events = obj.name;
+                String events = obj.eventid;
 
                 if (TextUtils.isEmpty(Name)) {
                     Toast.makeText(getApplicationContext(), "Enter Name!", Toast.LENGTH_SHORT).show();
@@ -119,7 +119,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
                 }
 
                 RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
-                Firebase userRef = ref.child("regs");
+                Firebase userRef = ref.child("registrations");
 
                 userRef.push().setValue(reg);
 
