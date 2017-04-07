@@ -5,15 +5,15 @@ package in.msritudbhav.udbhav2017insights;
  */
 
 public class Categories {
-Long id;
-    Long name;
+    String id;
+    String name;
 
     Categories()
     {
 
     }
 
-    Categories(Long id, Long name)
+    Categories(String id, String name)
     {
         this.id = id;
         this.name = name;

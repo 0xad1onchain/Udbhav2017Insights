@@ -6,24 +6,15 @@
     android:layout_height="match_parent"
     tools:context="in.msritudbhav.udbhav2017insights.MainActivity">
 
-    <!--<ListView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/list_item">-->
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/list_number"/>-->
-
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/list_text"/>-->
-        <!--</LinearLayout>-->
-    <!--</ListView>-->
-
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        android:indicatorEnd="?android:attr/expandableListPreferredItemIndicatorLeft"
+        />
 </LinearLayout>
+
+
+    <!--android:indicatorRight="?android:attr/expandableListPreferredItemIndicatorRight"-->
