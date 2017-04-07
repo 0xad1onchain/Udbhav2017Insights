@@ -14,13 +14,11 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
-import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AddRegistrationActivity extends AppCompatActivity {
-    private String EventName;
+    private String eventName, eventId, eventAmt, eventCatName, eventType;
     private Firebase ref;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth mAuth;
@@ -34,9 +32,17 @@ public class AddRegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_registration);
         mAuth = FirebaseAuth.getInstance();
-        EventName = getIntent().getStringExtra("EVENT_NAME");
+        eventName = getIntent().getStringExtra("EVENT_NAME");
+        eventId = getIntent().getStringExtra("EVENT_ID");
+        eventAmt = getIntent().getStringExtra("EVENT_AMT");
+        eventType = getIntent().getStringExtra("EVENT_TYPE");
+        eventCatName = getIntent().getStringExtra("EVENT_CATNAME");
         ref = new Firebase(FirebaseUtils.FirebaseURL);
-        Query eventRef = ref.child("regDescription").orderByChild("name").equalTo(EventName);
+
+        if(eventType == null || eventType.equals(null) || eventType.equals("null"))
+        {
+            eventType = "Not Available";
+        }
 
         name = (EditText) findViewById(R.id.name_text);
         detail = (TextView) findViewById(R.id.detail_text);
@@ -44,6 +50,8 @@ public class AddRegistrationActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email_text);
         college = (EditText) findViewById(R.id.college_text);
         Submit = (Button) findViewById(R.id.add_btn);
+
+        detail.setText("Event: "+ eventName+"\nAmount: "+eventAmt+"\nCategory: "+ eventCatName + "\nType: "+eventType );
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -58,32 +66,32 @@ public class AddRegistrationActivity extends AppCompatActivity {
             }
         };
 
-        eventRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
-                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
-
-
-                for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    registrationDetails post = postSnapshot.getValue(registrationDetails.class);
-                    Log.e("Get Data", "GotIT"+post.name);
-                    obj = post;
-                    detail.setText("Event: "+ obj.name+"\nAmount: "+obj.regamt+"\nCategory: "+ obj.catname );
-
-
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e("The read failed: ", "Error invoked onCalcelled");
-
-            }
-
-
-        });
+//        eventRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
+//                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
+//
+//
+//                for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    registrationDetails post = postSnapshot.getValue(registrationDetails.class);
+//                    Log.e("Get Data", "GotIT"+post.name);
+//                    obj = post;
+//
+//
+//
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("The read failed: ", "Error invoked onCalcelled");
+//
+//            }
+//
+//
+//        });
 
 
         Submit.setOnClickListener(new View.OnClickListener() {
@@ -95,8 +103,8 @@ public class AddRegistrationActivity extends AppCompatActivity {
                 String College = college.getText().toString();
                 String Email = email.getText().toString();
                 String vid = mAuth.getCurrentUser().getEmail();
-                String amount = obj.regamt;
-                String events = obj.eventid;
+                String amount = eventAmt;
+                String events = eventId;
 
                 if (TextUtils.isEmpty(Name)) {
                     Toast.makeText(getApplicationContext(), "Enter Name!", Toast.LENGTH_SHORT).show();
@@ -121,10 +129,23 @@ public class AddRegistrationActivity extends AppCompatActivity {
                 RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
                 Firebase userRef = ref.child("registrations");
 
-                userRef.push().setValue(reg);
+                userRef.push().setValue(reg, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        if(firebaseError != null)
+                        {
+                            Toast.makeText(getApplicationContext(), "Upload Failed, Check Internet Connection", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "Event Uploaded Successfully!", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
 
 
-                Toast.makeText(getApplicationContext(), "setvalue", Toast.LENGTH_SHORT).show();
+
             }
         });
 

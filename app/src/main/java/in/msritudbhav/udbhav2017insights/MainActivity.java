@@ -20,7 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 //import com.google.firebase.database.ValueEventListener;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
     DatabaseReference mRef;
+    private HashMap<String, ArrayList<registrationDetails>> catToEvent;
     private FirebaseListAdapter mAdapter;
     private ArrayList<Categories> categoriesList;
     private ArrayList<registrationDetails> eventList;
@@ -39,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
     List<String> Music = new ArrayList<String>();
     List<String> Literature = new ArrayList<String>();
     List<String> Theme = new ArrayList<String>();
-    HashMap<String, List<String>> expandableListDetail = new HashMap<String, List<String>>();
+    HashMap<String, ArrayList<registrationDetails>> expandableListDetail = new HashMap<>();
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
-    List<String> expandableListTitle;
+    ArrayList<String> expandableListTitle = new ArrayList<>();
 
 
     @Override
@@ -51,12 +54,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         categoriesList = new ArrayList<Categories>();
         eventList = new ArrayList<registrationDetails>();
+        catToEvent = new HashMap<>();
         auth = FirebaseAuth.getInstance();
       Firebase.setAndroidContext(getApplicationContext());
         ref = new Firebase(FirebaseUtils.FirebaseURL);
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
 
-        final ArrayList<String> catnameList = new ArrayList<>();
+        final ArrayList<Categories> catnameList = new ArrayList<>();
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -96,35 +100,35 @@ public class MainActivity extends AppCompatActivity {
 
 
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        catRef = ref.child("categories");
-
-        catRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
-                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
-
-                categoriesList.clear();
-
-                for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Categories post = postSnapshot.getValue(Categories.class);
-                    Log.e("Get Data", "GotIT"+post.name);
-                    categoriesList.add(post);
-                    catnameList.add(post.name);
-
-
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e("The read failed: ", "Error invoked onCalcelled");
-
-            }
-
-
-        });
+//        catRef = ref.child("categories");
+//
+//        catRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
+//                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
+//
+//                categoriesList.clear();
+//
+//                for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    Categories post = postSnapshot.getValue(Categories.class);
+//                    Log.e("Get Data", "GotIT"+post.name);
+//                    categoriesList.add(post);
+//                    catnameList.add(post);
+//
+//
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("The read failed: ", "Error invoked onCalcelled");
+//
+//            }
+//
+//
+//        });
 
         eventRef = ref.child("regDescription");
 
@@ -133,46 +137,50 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
                 Log.e("Count ", "" + dataSnapshot.getChildrenCount());
 
-
-                eventList.clear();
+                catToEvent.clear();
 
                 for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     registrationDetails post = postSnapshot.getValue(registrationDetails.class);
-                    Log.e("Get Data", "GotIT"+post.name+post.catid);
+                    Log.e("Get Data", "GotIT" + post.name + post.catid);
                     eventList.add(post);
-                    if(post.catname.equals("Art"))
+                    ArrayList<registrationDetails> eventObjectList = catToEvent.get(post.catid);
+                    if(eventObjectList == null)
                     {
-                        Art.add(post.name);
-                    }
-                    if(post.catname.equals("Dance"))
-                    {
-                        Dance.add(post.name);
-                    }
-                    if(post.catname.equals("Misc"))
-                    {
-                        Misc.add(post.name);
-                    }
-                    if(post.catname.equals("Music"))
-                    {
-                        Music.add(post.name);
-                    }
-                    if(post.catname.equals("Theme"))
-                    {
-                        Theme.add(post.name);
-                    }
-                    if(post.catname.equals("Literature"))
-                    {
-                        Literature.add(post.name);
+                        eventObjectList = new ArrayList<registrationDetails>();
+
                     }
 
-                    expandableListDetail.put("Art", Art);
-                    expandableListDetail.put("Dance", Dance);
-                    expandableListDetail.put("Misc", Misc);
-                    expandableListDetail.put("Music", Music);
-                    expandableListDetail.put("Theme", Theme);
-                    expandableListDetail.put("Literature", Literature);
-                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-                    expandableListAdapter = new CustomExpandableListAdapter(getApplicationContext(), expandableListTitle, expandableListDetail);
+                    eventObjectList.add(post);
+                    catToEvent.put(post.catid, eventObjectList);
+                    if(!expandableListTitle.contains(post.getCatname()))
+                    {
+                        expandableListTitle.add(post.getCatname());
+                    }
+
+
+
+                }
+
+
+                    Iterator it  = catToEvent.entrySet().iterator();
+                    while(it.hasNext())
+                    {
+                        Map.Entry<String, ArrayList<registrationDetails>> obj = (Map.Entry) it.next();
+                        ArrayList<registrationDetails> catname = obj.getValue();
+                        expandableListDetail.put(catname.get(0).getCatname(), catname);
+                    }
+
+
+
+
+//                    expandableListDetail.put("Art", Art);
+//                    expandableListDetail.put("Dance", Dance);
+//                    expandableListDetail.put("Misc", Misc);
+//                    expandableListDetail.put("Music", Music);
+//                    expandableListDetail.put("Theme", Theme);
+//                    expandableListDetail.put("Literature", Literature);
+//                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+                    expandableListAdapter = new CustomExpandableListAdapter(getApplicationContext(), expandableListTitle,expandableListDetail);
                     expandableListView.setAdapter(expandableListAdapter);
                     expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -208,19 +216,21 @@ public class MainActivity extends AppCompatActivity {
 //                                            childPosition), Toast.LENGTH_SHORT
 //                            ).show();
 
-                            String EventName = expandableListDetail.get(
-                                    expandableListTitle.get(groupPosition)).get(
-                                    childPosition);
 
+                            final registrationDetails expandedListItem = (registrationDetails) expandableListAdapter.getChild(groupPosition, childPosition);
                             Intent intent = new Intent(getApplicationContext(), AddRegistrationActivity.class);
-                            intent.putExtra("EVENT_NAME", EventName);
+                            intent.putExtra("EVENT_NAME", expandedListItem.name);
+                            intent.putExtra("EVENT_CATNAME", expandedListItem.catname);
+                            intent.putExtra("EVENT_ID", expandedListItem.eventid);
+                            intent.putExtra("EVENT_AMT", expandedListItem.regamt);
+                            intent.putExtra("EVENT_TYPE", expandedListItem.type);
                             startActivity(intent);
 
                             return false;
                         }
                     });
                 }
-            }
+
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
