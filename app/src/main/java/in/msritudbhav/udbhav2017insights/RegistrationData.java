@@ -1,15 +1,17 @@
 package in.msritudbhav.udbhav2017insights;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.ArrayList;
 
 /**
  * Created by Adi on 07/04/17.
  */
-
+@IgnoreExtraProperties
 public class RegistrationData {
-    String name, college, phone, email, amount, vid;
-    ArrayList<String> eventIds = new ArrayList<String>();
-    Boolean emailSent;
+    public String name, college, phone, email, amount, vid;
+    public ArrayList<String> eventIds = new ArrayList<String>();
+    public Boolean emailSent;
 
 
 

@@ -1,12 +1,14 @@
 package in.msritudbhav.udbhav2017insights;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by Adi on 31/03/17.
  */
-
+@IgnoreExtraProperties
 public class Categories {
-    String id;
-    String name;
+    public String id;
+    public String name;
 
     Categories()
     {

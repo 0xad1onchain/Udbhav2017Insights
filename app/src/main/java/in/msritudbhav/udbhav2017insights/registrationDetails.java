@@ -2,12 +2,15 @@ package in.msritudbhav.udbhav2017insights;
 
 import android.util.Log;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by Adi on 06/04/17.
  */
 
+@IgnoreExtraProperties
 public class registrationDetails {
-    String catid, catname, eventid, maxpart, minpart, name, regamt, type;
+    public String catid, catname, eventid, maxpart, minpart, name, regamt, type;
 
     registrationDetails()
     {

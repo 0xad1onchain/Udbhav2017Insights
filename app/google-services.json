@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1034269677026-kt2cjgiti4t94f0m9f98etnvj7j4fv2l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.msritudbhav.udbhav2017insights",
+            "certificate_hash": "02aea316e49258de7a56c35dde887310c403073c"
+          }
+        },
+        {
           "client_id": "1034269677026-uimsvu5u1c85u38e5gqsnm1kfuj0ti1u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

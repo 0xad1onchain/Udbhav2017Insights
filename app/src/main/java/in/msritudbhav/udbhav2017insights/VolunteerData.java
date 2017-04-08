@@ -1,14 +1,16 @@
 package in.msritudbhav.udbhav2017insights;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by Adi on 05/04/17.
  */
-
+@IgnoreExtraProperties
 public class VolunteerData {
-    String name;
-    String usn;
-    String phoneno;
-    String email;
+    public String name;
+    public String usn;
+    public String phoneno;
+    public String email;
 
     VolunteerData()
     {}
