@@ -3,6 +3,7 @@
     package="in.msritudbhav.udbhav2017insights">
 
     <application
+        android:name=".Utils.Udbhav2017Insights"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -10,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/app_name"
             >
             <intent-filter>
@@ -19,9 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".VolunteerActivity" />
-        <activity android:name=".AddRegistrationActivity"></activity>
+        <activity android:name=".Activities.MainActivity" />
+        <activity android:name=".Activities.VolunteerActivity" />
+        <activity android:name=".Activities.AddRegistrationActivity"></activity>
     </application>
 
 </manifest>

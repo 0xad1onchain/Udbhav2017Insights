@@ -1,4 +1,4 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Wrappers;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -20,7 +20,7 @@ public class RegistrationData {
 
     }
 
-    RegistrationData(String name, String college, String phone, String email, String amount, String events, String vid )
+    public RegistrationData(String name, String college, String phone, String email, String amount, String events, String vid )
     {
         this.name = name;
         this.college = college;

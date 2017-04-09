@@ -6,13 +6,13 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context="in.msritudbhav.udbhav2017insights.VolunteerActivity">
+    tools:context="in.msritudbhav.udbhav2017insights.Activities.VolunteerActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="For Volunteers Only"
-        android:textSize="26dp"/>
+        android:textSize="26sp"/>
 
     <Space
         android:layout_width="match_parent"
@@ -22,12 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
+        android:inputType="textCapWords"
         android:id="@+id/name_text"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="USN"
+        android:inputType="textCapCharacters"
         android:id="@+id/usn_text"/>
 
     <EditText

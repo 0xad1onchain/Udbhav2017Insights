@@ -1,4 +1,4 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Wrappers;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -15,7 +15,7 @@ public class VolunteerData {
     VolunteerData()
     {}
 
-    VolunteerData(String Name, String USN, String Phone, String Email)
+    public VolunteerData(String Name, String USN, String Phone, String Email)
     {
         this.name = Name;
         this.email = Email;

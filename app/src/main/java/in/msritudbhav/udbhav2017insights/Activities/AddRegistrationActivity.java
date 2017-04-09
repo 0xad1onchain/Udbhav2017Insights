@@ -1,5 +1,6 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,17 +16,23 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import in.msritudbhav.udbhav2017insights.R;
+import in.msritudbhav.udbhav2017insights.Wrappers.RegistrationData;
+import in.msritudbhav.udbhav2017insights.Wrappers.EventDetail;
 
 public class AddRegistrationActivity extends AppCompatActivity {
     private String eventName, eventId, eventAmt, eventCatName, eventType;
-    private Firebase ref;
-    private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth mAuth;
-    private registrationDetails obj;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private EventDetail obj;
     private TextView detail;
-    private Button Submit;
+    private Button submit;
     private EditText name, phone, email, college;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +44,18 @@ public class AddRegistrationActivity extends AppCompatActivity {
         eventAmt = getIntent().getStringExtra("EVENT_AMT");
         eventType = getIntent().getStringExtra("EVENT_TYPE");
         eventCatName = getIntent().getStringExtra("EVENT_CATNAME");
-        ref = new Firebase(FirebaseUtils.FirebaseURL);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        Firebase.setAndroidContext(getApplicationContext());
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() == null)
+                {
+                    startActivity(new Intent(AddRegistrationActivity.this, LoginActivity.class));
+                }
+            }
+        };
 
         if(eventType == null || eventType.equals(null) || eventType.equals("null"))
         {
@@ -49,52 +67,11 @@ public class AddRegistrationActivity extends AppCompatActivity {
         phone = (EditText) findViewById(R.id.phone_text);
         email = (EditText) findViewById(R.id.email_text);
         college = (EditText) findViewById(R.id.college_text);
-        Submit = (Button) findViewById(R.id.add_btn);
+        submit = (Button) findViewById(R.id.add_btn);
 
         detail.setText("Event: "+ eventName+"\nAmount: "+eventAmt+"\nCategory: "+ eventCatName + "\nType: "+eventType );
 
-        authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null) {
-                    // user auth state is changed - user is null
-                    // launch login activity
-                    startActivity(new Intent(AddRegistrationActivity.this, LoginActivity.class));
-                    //finish();
-                }
-            }
-        };
-
-//        eventRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
-//                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
-//
-//
-//                for (com.firebase.client.DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//                    registrationDetails post = postSnapshot.getValue(registrationDetails.class);
-//                    Log.e("Get Data", "GotIT"+post.name);
-//                    obj = post;
-//
-//
-//
-//
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//                Log.e("The read failed: ", "Error invoked onCalcelled");
-//
-//            }
-//
-//
-//        });
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
+        submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v("", "Add clicked");
@@ -126,29 +103,51 @@ public class AddRegistrationActivity extends AppCompatActivity {
                     return;
                 }
 
-                RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
-                Firebase userRef = ref.child("registrations");
+                final ProgressDialog progress;
+                progress = new ProgressDialog(AddRegistrationActivity.this);
+                progress.setTitle("Loading");
+                progress.setMessage("Wait while loading...");
+                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                progress.show();
 
-                userRef.push().setValue(reg, new Firebase.CompletionListener() {
+                RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
+                DatabaseReference userRef = mDatabase.child("registrations");
+
+                userRef.push().setValue(reg, new DatabaseReference.CompletionListener() {
                     @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                        if(firebaseError != null)
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if(progress != null && progress.isShowing())
+                            progress.dismiss();
+                        if(databaseError != null)
                         {
+                            Log.v("udbhav17",databaseError.toString());
                             Toast.makeText(getApplicationContext(), "Upload Failed, Check Internet Connection", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
-                            Toast.makeText(getApplicationContext(), "Event Uploaded Successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Registered Successfully!", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
 
                     }
                 });
-
-
-
             }
         });
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
 

@@ -1,4 +1,4 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +21,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import in.msritudbhav.udbhav2017insights.R;
 
 public class LoginActivity extends AppCompatActivity {
 

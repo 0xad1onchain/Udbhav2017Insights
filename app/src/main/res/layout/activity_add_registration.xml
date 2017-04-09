@@ -6,7 +6,7 @@
     android:orientation="vertical"
 
     android:layout_height="match_parent"
-    tools:context="in.msritudbhav.udbhav2017insights.AddRegistrationActivity">
+    tools:context="in.msritudbhav.udbhav2017insights.Activities.AddRegistrationActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
-        android:inputType="textPersonName"
+        android:inputType="textPersonName|textCapWords"
         android:id="@+id/name_text"/>
 
     <EditText
@@ -52,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="College"
+        android:inputType="textCapCharacters"
         android:id="@+id/college_text"/>
 
     <Button

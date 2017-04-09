@@ -1,4 +1,4 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Utils;
 
 /**
  * Created by Adi on 30/03/17.
@@ -6,6 +6,4 @@ package in.msritudbhav.udbhav2017insights;
 
 public class FirebaseUtils {
     public static final String FirebaseURL = "https://udbhav-insights-17.firebaseio.com/";
-    public static final String userEmail = "adi.gupta13@gmail.com";
-    public static final String userPass = "udbhav";
 }

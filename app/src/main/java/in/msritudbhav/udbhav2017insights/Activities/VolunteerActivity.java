@@ -1,4 +1,4 @@
-package in.msritudbhav.udbhav2017insights;
+package in.msritudbhav.udbhav2017insights.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -20,15 +20,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import in.msritudbhav.udbhav2017insights.Utils.FirebaseUtils;
+import in.msritudbhav.udbhav2017insights.R;
+import in.msritudbhav.udbhav2017insights.Wrappers.VolunteerData;
+
 public class VolunteerActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private Button Submit;
+    private Button submit;
     private ProgressDialog mProgress;
-    DatabaseReference volunteerRef;
-    private Firebase mRef, userRef;
-    private EditText NameText, PhoneText, USNText;
+    private EditText nameText, phoneText, USNText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,65 +40,45 @@ public class VolunteerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_volunteer);
         mProgress.setMessage("Please Wait...");
         mProgress.show();
-        Submit = (Button) findViewById(R.id.submit_btn);
-        NameText = (EditText) findViewById(R.id.name_text);
-        PhoneText = (EditText) findViewById(R.id.phone_text);
+        submit = (Button) findViewById(R.id.submit_btn);
+        nameText = (EditText) findViewById(R.id.name_text);
+        phoneText = (EditText) findViewById(R.id.phone_text);
         USNText = (EditText) findViewById(R.id.usn_text);
         mAuth = FirebaseAuth.getInstance();
         Firebase.setAndroidContext(getApplicationContext());
-        mRef = new Firebase(FirebaseUtils.FirebaseURL);
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
                 if(firebaseAuth.getCurrentUser() == null)
                 {
-
-
                     startActivity(new Intent(VolunteerActivity.this, LoginActivity.class));
                 }
             }
         };
 
-        final String UID = mAuth.getCurrentUser().getUid();
-        DatabaseReference baseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(FirebaseUtils.FirebaseURL);
-        volunteerRef = baseRef.child("users");
-        volunteerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild(UID)) {
-                    startActivity(new Intent(VolunteerActivity.this, MainActivity.class));
-                }
-            }
-            public void onCancelled(DatabaseError firebaseError) { }
-
-        });
-
-//        Log.d(TAG, "volunteer uid is "+UID);
-//        if ()
-//        {
-//            startActivity(new Intent(LoginActivity.this, VolunteerActivity.class));
-//            Log.d(TAG, "volunteer null");
-//        }
-
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v("", "Submit clicked");
-                String Phone = PhoneText.getText().toString();
-                String Name = NameText.getText().toString();
+                final ProgressDialog progress;
+                progress = new ProgressDialog(VolunteerActivity.this);
+                progress.setTitle("Loading");
+                progress.setMessage("Wait while loading...");
+                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                progress.show();
+                Log.v("", "submit clicked");
+                String phone = phoneText.getText().toString();
+                String name = nameText.getText().toString();
                 String USN = USNText.getText().toString();
-                String Email = mAuth.getCurrentUser().getEmail();
+                String email = mAuth.getCurrentUser().getEmail();
                 String UID = mAuth.getCurrentUser().getUid();
 
-                if (TextUtils.isEmpty(Name)) {
+                if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getApplicationContext(), "Enter Name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(Phone)) {
+                if (TextUtils.isEmpty(phone)) {
                     Toast.makeText(getApplicationContext(), "Enter phone number!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -106,12 +88,22 @@ public class VolunteerActivity extends AppCompatActivity {
                     return;
                 }
 
-                VolunteerData volunteer = new VolunteerData(Name, USN, Phone, Email);
-                userRef = mRef.child("users").child(UID);
-                userRef.setValue(volunteer);
-
-                   startActivity(new Intent(VolunteerActivity.this, MainActivity.class));
-                Toast.makeText(getApplicationContext(), "setvalue", Toast.LENGTH_SHORT).show();
+                VolunteerData volunteer = new VolunteerData(name, USN, phone, email);
+                DatabaseReference userRef = mDatabase.child("users").child(UID);
+                userRef.setValue(volunteer, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if(progress!= null && progress.isShowing())
+                            progress.dismiss();
+                        if(databaseError != null){
+                            Toast.makeText(VolunteerActivity.this, "Error saving volunteer data", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(VolunteerActivity.this, "Data Saved", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(VolunteerActivity.this, MainActivity.class));
+                        }
+                    }
+                });
             }
         });
 
@@ -120,9 +112,17 @@ public class VolunteerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
 
