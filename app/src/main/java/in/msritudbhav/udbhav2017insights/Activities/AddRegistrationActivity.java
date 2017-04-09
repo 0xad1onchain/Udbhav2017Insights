@@ -10,15 +10,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import in.msritudbhav.udbhav2017insights.R;
 import in.msritudbhav.udbhav2017insights.Wrappers.RegistrationData;
@@ -33,6 +35,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
     private Button submit;
     private EditText name, phone, email, college;
     private DatabaseReference mDatabase;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() == null)
                 {
-                    startActivity(new Intent(AddRegistrationActivity.this, LoginActivity.class));
+                    startActivity(new Intent(AddRegistrationActivity.this, EmailLoginActivity.class));
                 }
             }
         };
@@ -68,6 +71,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email_text);
         college = (EditText) findViewById(R.id.college_text);
         submit = (Button) findViewById(R.id.add_btn);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         detail.setText("Event: "+ eventName+"\nAmount: "+eventAmt+"\nCategory: "+ eventCatName + "\nType: "+eventType );
 
@@ -75,6 +79,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.v("", "Add clicked");
+                progressBar.setVisibility(View.VISIBLE);
                 String Phone = phone.getText().toString();
                 String Name = name.getText().toString();
                 String College = college.getText().toString();
@@ -103,32 +108,26 @@ public class AddRegistrationActivity extends AppCompatActivity {
                     return;
                 }
 
-                final ProgressDialog progress;
-                progress = new ProgressDialog(AddRegistrationActivity.this);
-                progress.setTitle("Loading");
-                progress.setMessage("Wait while loading...");
-                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-                progress.show();
-
                 RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
-                DatabaseReference userRef = mDatabase.child("registrations");
-
-                userRef.push().setValue(reg, new DatabaseReference.CompletionListener() {
+                DatabaseReference regRef = mDatabase.child("registrations").push();
+                regRef.setValue(reg);
+                progressBar.setVisibility(View.GONE);
+                regRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        if(progress != null && progress.isShowing())
-                            progress.dismiss();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "Registered Successfully!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        progressBar.setVisibility(View.GONE);
                         if(databaseError != null)
                         {
                             Log.v("udbhav17",databaseError.toString());
                             Toast.makeText(getApplicationContext(), "Upload Failed, Check Internet Connection", Toast.LENGTH_SHORT).show();
                         }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(), "Registered Successfully!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-
                     }
                 });
             }

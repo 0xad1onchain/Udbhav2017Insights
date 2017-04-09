@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private CustomExpandableListAdapter expandableListAdapter;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
-    private ProgressDialog progress;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -50,43 +53,18 @@ public class MainActivity extends AppCompatActivity {
                 if (user == null) {
                     // user auth state is changed - user is null
                     // launch login activity
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    startActivity(new Intent(MainActivity.this, EmailLoginActivity.class));
                     //finish();
                 }
             }
         };
-
-        progress = new ProgressDialog(this);
-        progress.setTitle("Loading");
-        progress.setMessage("Wait while fetching events...");
-        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-        progress.show();
-
-        final String UID = mAuth.getCurrentUser().getUid();
-        DatabaseReference usersRef = mDatabase.child("users").child(UID);
-        usersRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()){
-                    Log.v("test","user does not exist");
-                    dismissDialog();
-                    startActivity(new Intent(MainActivity.this, VolunteerActivity.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                dismissDialog();
-                Toast.makeText(MainActivity.this, "Check Connection. Could not get auth info", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         eventRef = FirebaseDatabase.getInstance().getReference("regDescription");
         eventRef.keepSynced(true);
         eventRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                dismissDialog();
+                progressBar.setVisibility(View.GONE);
                 EventDetail post = dataSnapshot.getValue(EventDetail.class);
                 post.setRegId(dataSnapshot.getKey());
                 Log.v("event","onChildAdded: "+post.getName());
@@ -152,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                dismissDialog();
                 Toast.makeText(MainActivity.this, "Check Connection. Could not get event info", Toast.LENGTH_SHORT).show();
                 Log.v("event","onCancelled: "+databaseError);
             }
@@ -189,13 +166,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    void dismissDialog(){
-        if(progress != null && progress.isShowing()){
-            progress.dismiss();
-            progress = null;
         }
     }
 

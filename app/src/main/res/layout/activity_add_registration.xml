@@ -1,68 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="in.msritudbhav.udbhav2017insights.Activities.AddRegistrationActivity">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="16dp"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:paddingTop="16dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:id="@+id/detail_text"/>
+            <TextView
+                android:id="@+id/detail_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name"
-        android:inputType="textPersonName|textCapWords"
-        android:id="@+id/name_text"/>
+            <EditText
+                android:id="@+id/name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPersonName|textCapWords" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Phone"
-        android:inputType="phone"
-        android:id="@+id/phone_text"/>
+            <EditText
+                android:id="@+id/phone_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone"
+                android:inputType="phone" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:id="@+id/email_text"/>
+            <EditText
+                android:id="@+id/email_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="College"
-        android:inputType="textCapCharacters"
-        android:id="@+id/college_text"/>
+            <EditText
+                android:id="@+id/college_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="College"
+                android:inputType="textCapCharacters" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/add_btn"
-        android:text="ADD REGISTRATION"/>
-
-
+            <Button
+                android:id="@+id/add_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ADD REGISTRATION" />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
