@@ -14,9 +14,10 @@ public class Udbhav2017Insights extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.v("Udbhav","Application created");
+        Log.v("udbhav","Application created");
         Firebase.setAndroidContext(getApplicationContext());
-        //Firebase.getDefaultConfig().setPersistenceEnabled(true);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().getReference("regDescription").keepSynced(true);
+        FirebaseDatabase.getInstance().getReference("registrations").keepSynced(true);
     }
 }

@@ -1,6 +1,5 @@
 package in.msritudbhav.udbhav2017insights.Activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +26,7 @@ import in.msritudbhav.udbhav2017insights.Wrappers.RegistrationData;
 import in.msritudbhav.udbhav2017insights.Wrappers.EventDetail;
 
 public class AddRegistrationActivity extends AppCompatActivity {
-    private String eventName, eventId, eventAmt, eventCatName, eventType;
+    private String eventName, eventId, eventAmt, eventCatName, eventCatID, eventType;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private EventDetail obj;
@@ -47,6 +46,7 @@ public class AddRegistrationActivity extends AppCompatActivity {
         eventAmt = getIntent().getStringExtra("EVENT_AMT");
         eventType = getIntent().getStringExtra("EVENT_TYPE");
         eventCatName = getIntent().getStringExtra("EVENT_CATNAME");
+        eventCatID = getIntent().getStringExtra("EVENT_CATID");
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         Firebase.setAndroidContext(getApplicationContext());
@@ -80,35 +80,35 @@ public class AddRegistrationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.v("", "Add clicked");
                 progressBar.setVisibility(View.VISIBLE);
-                String Phone = phone.getText().toString();
-                String Name = name.getText().toString();
-                String College = college.getText().toString();
-                String Email = email.getText().toString();
+                String phone = AddRegistrationActivity.this.phone.getText().toString();
+                String name = AddRegistrationActivity.this.name.getText().toString();
+                String college = AddRegistrationActivity.this.college.getText().toString();
+                String email = AddRegistrationActivity.this.email.getText().toString();
                 String vid = mAuth.getCurrentUser().getEmail();
                 String amount = eventAmt;
                 String events = eventId;
 
-                if (TextUtils.isEmpty(Name)) {
+                if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getApplicationContext(), "Enter Name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(Phone)) {
+                if (TextUtils.isEmpty(phone)) {
                     Toast.makeText(getApplicationContext(), "Enter phone number!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(College)) {
+                if (TextUtils.isEmpty(college)) {
                     Toast.makeText(getApplicationContext(), "Enter College Name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(Email)) {
+                if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter Email!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                RegistrationData reg = new RegistrationData(Name, College, Phone, Email, amount, events, vid);
+                RegistrationData reg = new RegistrationData(name, eventName, eventCatID,  college, phone, email, amount, events, vid);
                 DatabaseReference regRef = mDatabase.child("registrations").push();
                 regRef.setValue(reg);
                 progressBar.setVisibility(View.GONE);

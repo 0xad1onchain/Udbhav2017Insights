@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
@@ -54,13 +57,12 @@ public class MainActivity extends AppCompatActivity {
                     // user auth state is changed - user is null
                     // launch login activity
                     startActivity(new Intent(MainActivity.this, EmailLoginActivity.class));
-                    //finish();
+                    finish();
                 }
             }
         };
 
         eventRef = FirebaseDatabase.getInstance().getReference("regDescription");
-        eventRef.keepSynced(true);
         eventRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AddRegistrationActivity.class);
                 intent.putExtra("EVENT_NAME", expandedListItem.getName());
                 intent.putExtra("EVENT_CATNAME", expandedListItem.getCatname());
+                intent.putExtra("EVENT_CATID", expandedListItem.getCatid());
                 intent.putExtra("EVENT_ID", expandedListItem.getEventid());
                 intent.putExtra("EVENT_AMT", expandedListItem.getRegamt());
                 intent.putExtra("EVENT_TYPE", expandedListItem.getType());
@@ -153,6 +156,27 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.history:
+                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                break;
+            case R.id.signout:
+                mAuth.signOut();
+                break;
+        }
+        return true;
     }
 
     @Override
